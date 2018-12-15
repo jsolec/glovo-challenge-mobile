@@ -1,0 +1,41 @@
+PODS:
+  - Alamofire (4.7.3)
+  - AlamofireObjectMapper (5.2.0):
+    - Alamofire (~> 4.7)
+    - ObjectMapper (~> 3.4)
+  - Bond (6.10.2):
+    - Differ (~> 1.3)
+    - ReactiveKit (~> 3.9)
+  - Differ (1.3.0)
+  - ObjectMapper (3.4.1)
+  - ReactiveKit (3.9.7)
+  - SnapKit (4.0.1)
+
+DEPENDENCIES:
+  - AlamofireObjectMapper (~> 5.2)
+  - Bond
+  - ReactiveKit
+  - SnapKit (~> 4.0.0)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - AlamofireObjectMapper
+    - Bond
+    - Differ
+    - ObjectMapper
+    - ReactiveKit
+    - SnapKit
+
+SPEC CHECKSUMS:
+  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
+  AlamofireObjectMapper: 92b6ce2423a9d159e686f6a1d514a009bf903ddc
+  Bond: 5c9d854fb14d3268496ccaf9b7ccd8428ec1609c
+  Differ: 9fcee7602542d7c6484ce05a0faec1c11258ed63
+  ObjectMapper: 5311bd50ca732930959e7ca1a2de43ab823a5ced
+  ReactiveKit: 5f4c440715d671901c382ae6b42ed3337ce4699b
+  SnapKit: 0de968a9fec17499afa29683b05d0c775b6d1c29
+
+PODFILE CHECKSUM: 4cae3c67cc24d4c231945969e2fc7f80afaf9247
+
+COCOAPODS: 1.5.3
