@@ -25,10 +25,36 @@ class LocationManager: NSObject {
         super.init()
         
         self.locationManager.delegate = self
+        self.locationManager.distanceFilter = kCLDistanceFilterNone
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.requestLocation()
     }
     
     func askForPermissions(completionBlock: @escaping LocationStatusBlock) {
+        self.statusAuthBlock = completionBlock
         self.locationManager.requestWhenInUseAuthorization()
+    }
+    
+    func startUpdatingLocation() {
+        self.locationManager.startUpdatingLocation()
+    }
+    
+    func getLocation() -> CLLocation? {
+        return self.locationManager.location
+    }
+    
+    func isLocationPermissionEnabled() -> Bool {
+        if CLLocationManager.locationServicesEnabled() {
+            switch(CLLocationManager.authorizationStatus()) {
+            case .notDetermined, .restricted, .denied:
+                return false
+            case .authorizedAlways, .authorizedWhenInUse:
+                return true
+            }
+        } else {
+            print("Location services are not enabled")
+        }
+        return false
     }
 }
 
@@ -37,5 +63,14 @@ extension LocationManager: CLLocationManagerDelegate {
         if let block = self.statusAuthBlock {
             block(status != .denied)
         }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        self.locationManager.stopUpdatingLocation()
+        //        self.view.didUpdateLocations(locations: locations)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Location Manager \(manager) didFailWithError: \(error)")
     }
 }

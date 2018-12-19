@@ -8,10 +8,20 @@
 
 import UIKit
 
-struct ModuleView {
-    static let home = "HomeViewController"
-}
-
 struct Fonts {
     static let homeTitle = UIFont(name: "Helvetica", size: 36)
+}
+
+struct Network {
+    static let baseUrl = "http://localhost:3000/api/"
+    static let countries = "countries/"
+    static let cities = "cities/"
+}
+
+enum ClientError: Error {
+    case error
+}
+
+struct CellsIdentifier {
+    static let cityCell = "CityCell"
 }

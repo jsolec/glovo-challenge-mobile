@@ -10,6 +10,7 @@ target 'glovotest' do
   pod 'SnapKit', '~> 4.0.0'
   pod 'ReactiveKit'
   pod 'Bond'
+  pod 'GoogleMaps'
 
   target 'glovotestTests' do
     inherit! :search_paths
