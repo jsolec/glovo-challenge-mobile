@@ -17,6 +17,13 @@ class MapViewController: UIViewController, MapViewProtocol {
 	var presenter: MapPresenterProtocol?
     
     var mapView: GMSMapView!
+    
+    var cityInfoView: UIView!
+    var cityNameLabel: UILabel!
+    var cityCurrencyLabel: UILabel!
+    var cityEnabledLabel: UILabel!
+    var cityBusyLabel: UILabel!
+    var cityTimeZoneLabel: UILabel!
 
 	override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,20 +32,86 @@ class MapViewController: UIViewController, MapViewProtocol {
     }
 
     func setup() {
+        self.setCityView()
+        self.setMapView()
+        
+        MapManager.shared.delegate = self
+        MapManager.shared.loadMap(mapView: self.mapView)
+        
+//        if let city = self.presenter?.moveCameraToCityCenter() {
+//
+//        }
+        
+        self.drawCitiesPolygons()
+    }
+    
+    func setCityView() {
+        self.cityInfoView = UIView()
+        self.view.addSubview(self.cityInfoView)
+        
+        self.cityInfoView.snp.makeConstraints { (maker) in
+            if #available(iOS 11.0, *) {
+                maker.top.equalTo(self.view.safeAreaLayoutGuide)
+            } else {
+                maker.top.equalTo(self.view.layoutMarginsGuide)
+            }
+        }
+        self.cityNameLabel = UILabel()
+        self.cityInfoView.addSubview(self.cityNameLabel)
+        
+        self.cityCurrencyLabel = UILabel()
+        self.cityInfoView.addSubview(self.cityCurrencyLabel)
+        
+        self.cityEnabledLabel = UILabel()
+        self.cityInfoView.addSubview(self.cityEnabledLabel)
+        
+        self.cityBusyLabel = UILabel()
+        self.cityInfoView.addSubview(self.cityBusyLabel)
+        
+        self.cityTimeZoneLabel = UILabel()
+        self.cityInfoView.addSubview(self.cityTimeZoneLabel)
+        
+        self.cityNameLabel.snp.makeConstraints { (maker) in
+            maker.top.leading.trailing.equalTo(10)
+        }
+        
+        self.cityCurrencyLabel.snp.makeConstraints { (maker) in
+            maker.top.equalTo(self.cityNameLabel.snp_bottomMargin).offset(10)
+            maker.leading.equalTo(self.cityNameLabel)
+            maker.width.equalTo(self.cityEnabledLabel)
+        }
+
+        self.cityEnabledLabel.snp.makeConstraints { (maker) in
+            maker.top.equalTo(self.cityCurrencyLabel)
+            maker.leading.equalTo(self.cityCurrencyLabel.snp_trailingMargin).offset(10)
+            maker.trailing.equalTo(self.cityNameLabel)
+            maker.width.equalTo(self.cityCurrencyLabel)
+        }
+
+        self.cityBusyLabel.snp.makeConstraints { (maker) in
+            maker.top.equalTo(self.cityCurrencyLabel.snp_bottomMargin).offset(10)
+            maker.leading.equalTo(self.cityNameLabel)
+            maker.width.equalTo(self.cityTimeZoneLabel)
+            maker.bottom.equalTo(self.cityInfoView.snp_bottomMargin).offset(-10)
+        }
+
+        self.cityTimeZoneLabel.snp.makeConstraints { (maker) in
+            maker.top.equalTo(self.cityBusyLabel)
+            maker.leading.equalTo(self.cityBusyLabel.snp_trailingMargin).offset(10)
+            maker.trailing.equalTo(self.cityNameLabel)
+            maker.width.equalTo(self.cityBusyLabel)
+        }
+    }
+    
+    func setMapView() {
         self.mapView = GMSMapView()
         self.view.addSubview(self.mapView)
         
         self.mapView.snp.makeConstraints { (maker) in
-            maker.width.height.equalTo(self.view)
+            maker.width.equalTo(self.view)
+            maker.top.equalTo(self.cityInfoView.snp_bottomMargin)
+            maker.bottom.equalTo(self.view)
         }
-        
-        MapManager.shared.loadMap(mapView: self.mapView)
-        
-        if let city = self.presenter?.moveCameraToCityCenter() {
-            
-        }
-        
-        self.drawCitiesPolygons()
     }
     
     func drawCitiesPolygons() {
@@ -47,5 +120,19 @@ class MapViewController: UIViewController, MapViewProtocol {
     
     func drawCityPolygons(workingArea: [String]) {
         MapManager.shared.createCityPolygons(inMap: self.mapView, polygonsPaths: workingArea)
+    }
+    
+    func displayCityInfo(city: CityModel) {
+        self.cityNameLabel.text = "kCityName".localize + (city.name ?? "")
+        self.cityCurrencyLabel.text = "kCityCurrency".localize + (city.currency ?? "")
+        self.cityEnabledLabel.text = "kCityEnabled".localize + (city.enabled?.description ?? "")
+        self.cityBusyLabel.text = "kCityBusy".localize + (city.busy?.description ?? "")
+        self.cityTimeZoneLabel.text = "kCityTimeZone".localize + (city.timeZone ?? "")
+    }
+}
+
+extension MapViewController: MapManagerDelegate {
+    func cameraMoved(point: CGPoint) {
+        self.presenter?.getCityOnPointInfo(point: point)
     }
 }

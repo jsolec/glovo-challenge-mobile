@@ -11,6 +11,7 @@
 import UIKit
 
 class MapPresenter: MapPresenterProtocol {
+    
 
     weak private var view: MapViewProtocol?
     var interactor: MapInteractorProtocol?
@@ -32,5 +33,13 @@ class MapPresenter: MapPresenterProtocol {
     
     func moveCameraToCityCenter() -> CityModel? {
         return self.interactor?.moveCameraToCityCenter()
+    }
+    
+    func getCityOnPointInfo(point: CGPoint) {
+        self.interactor?.getCityOnPointInfo(point: point)
+    }
+    
+    func displayCityInfo(city: CityModel) {
+        self.view?.displayCityInfo(city: city)
     }
 }

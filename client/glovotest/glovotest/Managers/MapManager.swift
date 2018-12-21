@@ -9,9 +9,17 @@
 import UIKit
 import GoogleMaps
 
+protocol MapManagerDelegate {
+    func cameraMoved(point: CGPoint)
+}
+
 class MapManager: NSObject {
     
     static let shared = MapManager()
+    var delegate: MapManagerDelegate?
+    
+    private var cityOnCamera: CityModel?
+    var cities: [CityModel]?
     
     static func configure() {
         GMSServices.provideAPIKey("AIzaSyBfoEovgwAlSkF7UjmL45afhATZtIrhifI")
@@ -84,6 +92,19 @@ class MapManager: NSObject {
         }
         return false
     }
+    
+    func isPointInsidePaths(point: CGPoint, polygonsPaths: [String]) -> Bool {
+        let coordinate = CLLocationCoordinate2D(latitude: CLLocationDegrees(point.x),
+                                                longitude: CLLocationDegrees(point.y))
+        for path in polygonsPaths {
+            if let gmsPath = GMSPath(fromEncodedPath: path) {
+                if GMSGeometryIsLocationOnPathTolerance(coordinate, gmsPath, true, 1000) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
 }
 
 extension MapManager: GMSMapViewDelegate {
@@ -98,6 +119,9 @@ extension MapManager: GMSMapViewDelegate {
     
     func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
         print("Camera position idleAt latitude = ", position.target.latitude, " longitude = ", position.target.longitude)
+        if let delegate = self.delegate {
+            delegate.cameraMoved(point: CGPoint(x: position.target.latitude, y: position.target.longitude))
+        }
     }
     
     func mapView(_ mapView: GMSMapView, willMove gesture: Bool) {
@@ -106,4 +130,7 @@ extension MapManager: GMSMapViewDelegate {
         }
     }
 
+    func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
+        print("Camera position didChange latitude = ", mapView.camera.target.latitude, " longitude = ", mapView.camera.target.longitude)
+    }
 }

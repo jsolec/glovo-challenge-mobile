@@ -46,6 +46,37 @@ class API: NSObject {
         }
     }
     
+    private func getCityInfo(code: String, completion: @escaping (ReactiveKit.Result<CityModel, ClientError>) -> Void) -> DataRequest {
+        
+        let URL = Network.baseUrl + Network.cities + code
+        return Alamofire.request(URL).responseObject { (response: DataResponse<CityModel>) in
+            
+            if let cityInfo = response.result.value {
+                completion(ReactiveKit.Result<CityModel, ClientError>(cityInfo))
+            } else {
+                completion(ReactiveKit.Result<CityModel, ClientError>(.error))
+            }
+        }
+    }
+    
+    func getCityInfo(code: String) -> Signal<CityModel, ClientError> {
+        return Signal { observer in
+            let task = self.getCityInfo(code: code, completion: { result in
+                switch result {
+                case .success(let city):
+                    observer.next(city)
+                    observer.completed()
+                case .failure(let error):
+                    observer.failed(error)
+                }
+            })
+            
+            return BlockDisposable {
+                task.cancel()
+            }
+        }
+    }
+    
     private func getCountries(completion: @escaping (ReactiveKit.Result<[CountryModel], ClientError>) -> Void) -> DataRequest {
         
         let URL = Network.baseUrl + Network.countries

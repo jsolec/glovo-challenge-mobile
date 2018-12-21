@@ -8,3 +8,8 @@
 
 
 "kGlovoTest" = "Glovo Test";
+"kCityName" = "City Name: ";
+"kCityCurrency" = "Currency: ";
+"kCityEnabled" = "Enabled: ";
+"kCityBusy" = "Busy: ";
+"kCityTimeZone" = "TimeZone: ";

@@ -17,29 +17,31 @@ class HomeInteractor: HomeInteractorProtocol {
     
     func askForPermissions() {
         LocationManager.shared.askForPermissions { (granted) in
-            if granted {
-                self.checkCityLocation()
-            } else {
-                
-            }
+            self.getCities(checkCityLocation: granted)
         }
     }
     
-    func checkCityLocation() {
+    func getCities(checkCityLocation: Bool) {
         let cities = API.manager.getCities()
         let _ = cities.observeNext { cities in
-            var insideWorkingArea = false
-            for city in cities {
-                if let workingArea = city.workingArea {
-                    let result = MapManager.shared.isUserInsidePaths(polygonsPaths: workingArea)
-                    if result {
-                        insideWorkingArea = true
+            if checkCityLocation {
+                var insideWorkingArea = false
+                
+                for city in cities {
+                    if let workingArea = city.workingArea {
+                        let result = MapManager.shared.isUserInsidePaths(polygonsPaths: workingArea)
+                        if result {
+                            insideWorkingArea = true
+                        }
+                        print("Is inside of ", city.code ?? "", " result = ", result)
                     }
-                    print("Is inside of ", city.code ?? "", " result = ", result)
                 }
-            }
-            if insideWorkingArea {
-                self.presenter?.showMap(cities: cities)
+                
+                if insideWorkingArea {
+                    self.presenter?.showMap(cities: cities)
+                } else {
+                    self.presenter?.showCityList(cities: cities)
+                }
             } else {
                 self.presenter?.showCityList(cities: cities)
             }

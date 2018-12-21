@@ -29,4 +29,23 @@ class MapInteractor: MapInteractorProtocol {
     func moveCameraToCityCenter() -> CityModel? {
         return self.citySelected
     }
+    
+    func getCityOnPointInfo(point: CGPoint) {
+        for city in self.cities {
+            if let workingArea = city.workingArea {
+                if MapManager.shared.isPointInsidePaths(point: point, polygonsPaths: workingArea),
+                    let cityCode = city.code {
+                    self.getCityInfo(code: cityCode)
+                    return
+                }
+            }
+        }
+    }
+    
+    func getCityInfo(code: String) {
+        let cityObserver = API.manager.getCityInfo(code: code)
+        let _ = cityObserver.observeNext { (city) in
+            self.presenter?.displayCityInfo(city: city)
+        }
+    }
 }
