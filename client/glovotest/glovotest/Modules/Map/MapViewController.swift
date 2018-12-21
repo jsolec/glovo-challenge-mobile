@@ -24,6 +24,9 @@ class MapViewController: UIViewController, MapViewProtocol {
     var cityEnabledLabel: UILabel!
     var cityBusyLabel: UILabel!
     var cityTimeZoneLabel: UILabel!
+    
+    var cityLogoDictionary: Dictionary<String, GMSMarker>?
+    var cityPolygonsDictionary: Dictionary<String, [GMSPolygon]>!
 
 	override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,12 +38,17 @@ class MapViewController: UIViewController, MapViewProtocol {
         self.setCityView()
         self.setMapView()
         
-        MapManager.shared.delegate = self
-        MapManager.shared.loadMap(mapView: self.mapView)
+        self.cityPolygonsDictionary = Dictionary<String, [GMSPolygon]>()
         
-//        if let city = self.presenter?.moveCameraToCityCenter() {
-//
-//        }
+        MapManager.shared.delegate = self
+        
+        if let city = self.presenter?.moveCameraToCityCenter(),
+            let workingArea = city.workingArea,
+            let coordinate = MapManager.shared.getFirstLocationFromWorkingArea(polygonsPaths: workingArea) {
+            MapManager.shared.loadMapWithCityLocation(mapView: self.mapView, cityLocation: coordinate)
+        } else {
+            MapManager.shared.loadMap(mapView: self.mapView)
+        }
         
         self.drawCitiesPolygons()
     }
@@ -50,6 +58,7 @@ class MapViewController: UIViewController, MapViewProtocol {
         self.view.addSubview(self.cityInfoView)
         
         self.cityInfoView.snp.makeConstraints { (maker) in
+            maker.leading.trailing.equalToSuperview()
             if #available(iOS 11.0, *) {
                 maker.top.equalTo(self.view.safeAreaLayoutGuide)
             } else {
@@ -57,18 +66,23 @@ class MapViewController: UIViewController, MapViewProtocol {
             }
         }
         self.cityNameLabel = UILabel()
+        self.cityNameLabel.font = Fonts.cityInfo
         self.cityInfoView.addSubview(self.cityNameLabel)
         
         self.cityCurrencyLabel = UILabel()
+        self.cityCurrencyLabel.font = Fonts.cityInfo
         self.cityInfoView.addSubview(self.cityCurrencyLabel)
         
         self.cityEnabledLabel = UILabel()
+        self.cityEnabledLabel.font = Fonts.cityInfo
         self.cityInfoView.addSubview(self.cityEnabledLabel)
         
         self.cityBusyLabel = UILabel()
+        self.cityBusyLabel.font = Fonts.cityInfo
         self.cityInfoView.addSubview(self.cityBusyLabel)
         
         self.cityTimeZoneLabel = UILabel()
+        self.cityTimeZoneLabel.font = Fonts.cityInfo
         self.cityInfoView.addSubview(self.cityTimeZoneLabel)
         
         self.cityNameLabel.snp.makeConstraints { (maker) in
@@ -118,21 +132,67 @@ class MapViewController: UIViewController, MapViewProtocol {
         self.presenter?.drawCitiesPolygons()
     }
     
-    func drawCityPolygons(workingArea: [String]) {
-        MapManager.shared.createCityPolygons(inMap: self.mapView, polygonsPaths: workingArea)
+    func drawCityPolygons(cityCode: String, workingArea: [String]) {
+        var polygonsArray = [GMSPolygon]()
+        for area in workingArea {
+            let polygon = MapManager.shared.createCityPolygons(inMap: self.mapView, polygonPath: area)
+            polygonsArray.append(polygon)
+        }
+        self.cityPolygonsDictionary[cityCode] = polygonsArray
     }
     
     func displayCityInfo(city: CityModel) {
-        self.cityNameLabel.text = "kCityName".localize + (city.name ?? "")
-        self.cityCurrencyLabel.text = "kCityCurrency".localize + (city.currency ?? "")
-        self.cityEnabledLabel.text = "kCityEnabled".localize + (city.enabled?.description ?? "")
-        self.cityBusyLabel.text = "kCityBusy".localize + (city.busy?.description ?? "")
-        self.cityTimeZoneLabel.text = "kCityTimeZone".localize + (city.timeZone ?? "")
+        DispatchQueue.main.async {
+            self.cityNameLabel.text = "kCityName".localize + (city.name ?? "")
+            self.cityCurrencyLabel.text = "kCityCurrency".localize + (city.currency ?? "")
+            self.cityEnabledLabel.text = "kCityEnabled".localize + (city.enabled?.description ?? "")
+            self.cityBusyLabel.text = "kCityBusy".localize + (city.busy?.description ?? "")
+            self.cityTimeZoneLabel.text = "kCityTimeZone".localize + (city.timeZone ?? "")
+        }
+    }
+    
+    func drawCityIcons() {
+        if let dictionary = self.cityLogoDictionary {
+            for key in dictionary.keys {
+                let marker = dictionary[key]
+                marker?.iconView?.isHidden = false
+            }
+        } else {
+            self.cityLogoDictionary = Dictionary<String, GMSMarker>()
+            if let cities = self.presenter?.getCitiesInfo() {
+                for city in cities {
+                    if let cityCode = city.code,
+                        let workingArea = city.workingArea {
+                        if let coordinate = MapManager.shared.getFirstLocationFromWorkingArea(polygonsPaths: workingArea) {
+                            let marker = MapManager.shared.createMarker(inMap: self.mapView, inPosition: coordinate)
+                            self.cityLogoDictionary![cityCode] = marker
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func deleteAllMarkers() {
+        if let dictionary = self.cityLogoDictionary {
+            for key in dictionary.keys {
+                let marker = dictionary[key]
+                marker?.iconView?.isHidden = true
+            }
+        }
     }
 }
 
 extension MapViewController: MapManagerDelegate {
     func cameraMoved(point: CGPoint) {
         self.presenter?.getCityOnPointInfo(point: point)
+    }
+    
+    func zoomChanged(zoom: Float) {
+        if zoom <= MapConstants.zoomForLogo {
+            self.drawCityIcons()
+        } else {
+            self.deleteAllMarkers()
+        }
     }
 }

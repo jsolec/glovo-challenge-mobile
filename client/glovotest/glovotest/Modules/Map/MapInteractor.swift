@@ -20,8 +20,8 @@ class MapInteractor: MapInteractorProtocol {
     
     func drawCitiesPolygons() {
         for city in cities {
-            if let workingArea = city.workingArea {
-                self.presenter?.drawCityPolygons(workingArea: workingArea)
+            if let cityCode = city.code, let workingArea = city.workingArea {
+                self.presenter?.drawCityPolygons(cityCode: cityCode, workingArea: workingArea)
             }
         }
     }
@@ -47,5 +47,9 @@ class MapInteractor: MapInteractorProtocol {
         let _ = cityObserver.observeNext { (city) in
             self.presenter?.displayCityInfo(city: city)
         }
+    }
+    
+    func getCitiesInfo() -> [CityModel]? {
+        return self.cities
     }
 }

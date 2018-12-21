@@ -10,10 +10,11 @@ import UIKit
 
 struct Fonts {
     static let homeTitle = UIFont(name: "Helvetica", size: 36)
+    static let cityInfo = UIFont(name: "Helvetica", size: 16)
 }
 
 struct Network {
-    static let baseUrl = "http://localhost:3000/api/"
+    static let baseUrl = "http://192.168.0.24:3000/api/"
     static let countries = "countries/"
     static let cities = "cities/"
 }
@@ -24,4 +25,10 @@ enum ClientError: Error {
 
 struct CellsIdentifier {
     static let cityCell = "CityCell"
+}
+
+struct MapConstants {
+    static let cityInfoOffset = 10000
+    static let zoomForLogo: Float = 8.0
+    static let zoomForCity: Float = 13.0
 }

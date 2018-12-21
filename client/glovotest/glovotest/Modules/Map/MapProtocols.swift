@@ -18,12 +18,13 @@ protocol MapWireframeProtocol: class {
 //MARK: Presenter -
 protocol MapPresenterProtocol: class {
     func drawCitiesPolygons()
-    func drawCityPolygons(workingArea: [String])
+    func drawCityPolygons(cityCode: String, workingArea: [String])
     func moveCameraToCityCenter() -> CityModel?
     
     func getCityOnPointInfo(point: CGPoint)
     
     func displayCityInfo(city: CityModel)
+    func getCitiesInfo() -> [CityModel]?
 }
 
 //MARK: Interactor -
@@ -35,6 +36,7 @@ protocol MapInteractorProtocol: class {
     
     func getCityOnPointInfo(point: CGPoint)
     func getCityInfo(code: String)
+    func getCitiesInfo() -> [CityModel]?
 }
 
 //MARK: View -
@@ -42,7 +44,7 @@ protocol MapViewProtocol: class {
 
     var presenter: MapPresenterProtocol?  { get set }
     func drawCitiesPolygons()
-    func drawCityPolygons(workingArea: [String])
+    func drawCityPolygons(cityCode: String, workingArea: [String])
     
     func displayCityInfo(city: CityModel)
 }

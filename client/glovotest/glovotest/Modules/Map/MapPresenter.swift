@@ -27,8 +27,8 @@ class MapPresenter: MapPresenterProtocol {
         self.interactor?.drawCitiesPolygons()
     }
     
-    func drawCityPolygons(workingArea: [String]) {
-        self.view?.drawCityPolygons(workingArea: workingArea)
+    func drawCityPolygons(cityCode: String, workingArea: [String]) {
+        self.view?.drawCityPolygons(cityCode: cityCode, workingArea: workingArea)
     }
     
     func moveCameraToCityCenter() -> CityModel? {
@@ -41,5 +41,9 @@ class MapPresenter: MapPresenterProtocol {
     
     func displayCityInfo(city: CityModel) {
         self.view?.displayCityInfo(city: city)
+    }
+    
+    func getCitiesInfo() -> [CityModel]? {
+        return self.interactor?.getCitiesInfo()
     }
 }

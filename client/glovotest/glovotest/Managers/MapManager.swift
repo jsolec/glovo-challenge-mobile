@@ -11,15 +11,14 @@ import GoogleMaps
 
 protocol MapManagerDelegate {
     func cameraMoved(point: CGPoint)
+    func zoomChanged(zoom: Float)
 }
 
 class MapManager: NSObject {
     
     static let shared = MapManager()
     var delegate: MapManagerDelegate?
-    
-    private var cityOnCamera: CityModel?
-    var cities: [CityModel]?
+    var zoom: Float = 0.0
     
     static func configure() {
         GMSServices.provideAPIKey("AIzaSyBfoEovgwAlSkF7UjmL45afhATZtIrhifI")
@@ -34,7 +33,8 @@ class MapManager: NSObject {
                 print("Latitude = ", location.coordinate.latitude, " longitude = ", location.coordinate.longitude)
                 //Barcelona
                 let camera = GMSCameraPosition.camera(withLatitude: location.coordinate.latitude,
-                                                      longitude: location.coordinate.longitude, zoom: 15)
+                                                      longitude: location.coordinate.longitude,
+                                                      zoom: MapConstants.zoomForCity)
                 mapView.camera = camera
                 mapView.isMyLocationEnabled = true
                 mapView.settings.myLocationButton = true
@@ -51,16 +51,32 @@ class MapManager: NSObject {
         }
     }
     
-    func moveCameraPosition(mapView: GMSMapView, latitude: Double, longitude: Double) {
-        mapView.camera = GMSCameraPosition.camera(withLatitude: latitude,
-                                                  longitude: longitude, zoom: 15)
+    func loadMapWithCityLocation(mapView: GMSMapView, cityLocation: CLLocationCoordinate2D) {
+                
+        print("Latitude = ", cityLocation.latitude, " longitude = ", cityLocation.longitude)
+        //Barcelona
+        let camera = GMSCameraPosition.camera(withLatitude: cityLocation.latitude,
+                                              longitude: cityLocation.longitude,
+                                              zoom: MapConstants.zoomForCity)
+        mapView.camera = camera
+        mapView.isMyLocationEnabled = false
+        mapView.settings.myLocationButton = false
+        mapView.delegate = self
+        
     }
     
     func createMarker(inMap map: GMSMapView, inPosition position: CLLocationCoordinate2D) -> GMSMarker {
         let marker = GMSMarker()
         
-        marker.iconView = UIView(frame: CGRect(x: 0, y: 0, width: 42, height: 42))
+        let frame = CGRect(x: 0, y: 0, width: 46, height: 46)
+        marker.iconView = UIView(frame: frame)
         marker.groundAnchor = CGPoint.init(x: 0.5, y: 1.0)
+        
+        let imageView = UIImageView(frame: frame)
+        imageView.image = UIImage(named: "cityLogo")
+        imageView.layer.cornerRadius = imageView.frame.height / 2
+        imageView.clipsToBounds = true
+        marker.iconView?.addSubview(imageView)
 
         marker.position = position
         marker.map = map
@@ -68,16 +84,14 @@ class MapManager: NSObject {
         return marker
     }
     
-    func createCityPolygons(inMap map: GMSMapView, polygonsPaths: [String]) {
-
-        for polygonPath in polygonsPaths {
-            let polygon = GMSPolygon()
-            polygon.path = GMSPath(fromEncodedPath: polygonPath)
-            polygon.fillColor = UIColor.redZone
-            polygon.strokeColor = UIColor.redStroke
-            polygon.strokeWidth = 2
-            polygon.map = map
-        }
+    func createCityPolygons(inMap map: GMSMapView, polygonPath: String) -> GMSPolygon {
+        let polygon = GMSPolygon()
+        polygon.path = GMSPath(fromEncodedPath: polygonPath)
+        polygon.fillColor = UIColor.redZone
+        polygon.strokeColor = UIColor.redStroke
+        polygon.strokeWidth = 2
+        polygon.map = map
+        return polygon
     }
     
     func isUserInsidePaths(polygonsPaths: [String]) -> Bool {
@@ -98,16 +112,39 @@ class MapManager: NSObject {
                                                 longitude: CLLocationDegrees(point.y))
         for path in polygonsPaths {
             if let gmsPath = GMSPath(fromEncodedPath: path) {
-                if GMSGeometryIsLocationOnPathTolerance(coordinate, gmsPath, true, 1000) {
+                if GMSGeometryIsLocationOnPathTolerance(coordinate,
+                                                        gmsPath,
+                                                        true,
+                                                        CLLocationDistance(MapConstants.cityInfoOffset)) {
                     return true
                 }
             }
         }
         return false
     }
+    
+    func getFirstLocationFromWorkingArea(polygonsPaths: [String]) -> CLLocationCoordinate2D? {
+        for polygonPath in polygonsPaths {
+            let path = GMSPath(fromEncodedPath: polygonPath)
+            if let count = path?.count() {
+                for index in 0...count {
+                    if let coordinate = path?.coordinate(at: index) {
+                        return coordinate
+                    }
+                }
+            }
+        }
+        return nil
+    }
 }
 
 extension MapManager: GMSMapViewDelegate {
+    
+    func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
+        mapView.animate(toZoom: MapConstants.zoomForCity)
+        mapView.animate(toLocation: marker.position)
+        return true
+    }
     
     func mapView(_ mapView: GMSMapView, didDrag marker: GMSMarker) {
         print("Camera position didDrag latitude = ", mapView.camera.target.latitude, " longitude = ", mapView.camera.target.longitude)
@@ -118,9 +155,15 @@ extension MapManager: GMSMapViewDelegate {
     }
     
     func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
-        print("Camera position idleAt latitude = ", position.target.latitude, " longitude = ", position.target.longitude)
+        print("Camera position idleAt latitude = ", position.target.latitude,
+              " longitude = ", position.target.longitude,
+              " zoom = ", position.zoom)
         if let delegate = self.delegate {
             delegate.cameraMoved(point: CGPoint(x: position.target.latitude, y: position.target.longitude))
+            if self.zoom != position.zoom {
+                self.zoom = position.zoom
+                delegate.zoomChanged(zoom: position.zoom)
+            }
         }
     }
     
