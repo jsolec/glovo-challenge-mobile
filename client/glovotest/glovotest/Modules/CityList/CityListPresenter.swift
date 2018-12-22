@@ -55,4 +55,8 @@ class CityListPresenter: CityListPresenterProtocol {
     func showMap(cities: [CityModel], citySelected: CityModel) {
         self.router.presentMapModule(cities: cities, citySelected: citySelected)
     }
+    
+    func showError() {
+        self.view?.showError()
+    }
 }

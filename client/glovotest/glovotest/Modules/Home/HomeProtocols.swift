@@ -20,6 +20,7 @@ protocol HomePresenterProtocol: class {
     func askForPermissions()
     func showMap(cities: [CityModel])
     func showCityList(cities: [CityModel])
+    func showError()
 }
 
 //MARK: Interactor -
@@ -33,4 +34,5 @@ protocol HomeInteractorProtocol: class {
 protocol HomeViewProtocol: class {
 
     var presenter: HomePresenterProtocol?  { get set }
+    func showError()
 }

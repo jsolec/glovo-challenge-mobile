@@ -23,6 +23,10 @@ class CityListInteractor: CityListInteractorProtocol {
             self.orderCities()
             self.presenter?.reloadData()
         }
+        
+        let _ = countries.observeFailed { (error) in
+            self.presenter?.showError()
+        }
     }
     
     func orderCities() {

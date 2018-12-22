@@ -13,3 +13,7 @@
 "kCityEnabled" = "Enabled: ";
 "kCityBusy" = "Busy: ";
 "kCityTimeZone" = "TimeZone: ";
+
+"Error" = "Error";
+"ServerError" = "Server can not be reached, please, turn on the server or modify the url in case you are using a device";
+"Ok" = "Accept";

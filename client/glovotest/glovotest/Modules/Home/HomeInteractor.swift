@@ -46,5 +46,9 @@ class HomeInteractor: HomeInteractorProtocol {
                 self.presenter?.showCityList(cities: cities)
             }
         }
+        
+        let _ = cities.observeFailed { (error) in
+            self.presenter?.showError()
+        }
     }
 }

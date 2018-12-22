@@ -33,4 +33,11 @@ class HomeViewController: UIViewController, HomeViewProtocol {
         
         self.presenter?.askForPermissions()
     }
+    
+    func showError() {
+        AlertsManager.showAlertMessage(controller: self,
+                                       title: "Error".localize,
+                                       message: "ServerError".localize,
+                                       buttonString: "Ok".localize)
+    }
 }

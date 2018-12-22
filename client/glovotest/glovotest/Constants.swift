@@ -14,7 +14,7 @@ struct Fonts {
 }
 
 struct Network {
-    static let baseUrl = "http://192.168.1.134:3000/api/"
+    static let baseUrl = "http://localhost:3000/api/"
     static let countries = "countries/"
     static let cities = "cities/"
 }

@@ -26,6 +26,8 @@ protocol CityListPresenterProtocol: class {
     func getCityCountByCountry(section: Int) -> Int
     
     func citySelected(indexPath: IndexPath)
+    
+    func showError()
 }
 
 //MARK: Interactor -
@@ -51,4 +53,6 @@ protocol CityListViewProtocol: class {
     
     func getCountries()
     func reloadData()
+    
+    func showError()
 }

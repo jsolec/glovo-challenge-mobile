@@ -15,6 +15,7 @@
 		B20BEFE421C05D5700FEB9D6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B20BEFE221C05D5700FEB9D6 /* LaunchScreen.storyboard */; };
 		B20BEFEF21C05D5700FEB9D6 /* glovotestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20BEFEE21C05D5700FEB9D6 /* glovotestTests.swift */; };
 		B20BEFFA21C05D5700FEB9D6 /* glovotestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20BEFF921C05D5700FEB9D6 /* glovotestUITests.swift */; };
+		B20E61C921CEA77C00586702 /* AlertsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20E61C821CEA77C00586702 /* AlertsManager.swift */; };
 		B210797D21CACEE000A5DE83 /* UIColor+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B210797C21CACEDF00A5DE83 /* UIColor+Theme.swift */; };
 		B217D65E21C42D0500B9F41B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B217D65D21C42D0500B9F41B /* Localizable.strings */; };
 		B217D66121C42D3D00B9F41B /* String+Localize.swift in Sources */ = {isa = PBXBuildFile; fileRef = B217D66021C42D3D00B9F41B /* String+Localize.swift */; };
@@ -80,6 +81,7 @@
 		B20BEFF521C05D5700FEB9D6 /* glovotestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = glovotestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B20BEFF921C05D5700FEB9D6 /* glovotestUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = glovotestUITests.swift; sourceTree = "<group>"; };
 		B20BEFFB21C05D5700FEB9D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B20E61C821CEA77C00586702 /* AlertsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsManager.swift; sourceTree = "<group>"; };
 		B210797C21CACEDF00A5DE83 /* UIColor+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Theme.swift"; sourceTree = "<group>"; };
 		B217D65D21C42D0500B9F41B /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		B217D66021C42D3D00B9F41B /* String+Localize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Localize.swift"; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 			children = (
 				B2979AD821C1AFDA00628415 /* LocationManager.swift */,
 				B2A0916121C57A9500500E64 /* MapManager.swift */,
+				B20E61C821CEA77C00586702 /* AlertsManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -586,6 +589,7 @@
 				B2A0915D21C569B700500E64 /* MapInteractor.swift in Sources */,
 				B2979AD921C1AFDA00628415 /* LocationManager.swift in Sources */,
 				B2A0914821C54F3D00500E64 /* CountryModel.swift in Sources */,
+				B20E61C921CEA77C00586702 /* AlertsManager.swift in Sources */,
 				B2979AD221C1ACC100628415 /* HomeInteractor.swift in Sources */,
 				B217D66121C42D3D00B9F41B /* String+Localize.swift in Sources */,
 				B28502C921C6BF31009CDCAD /* CityListViewController.swift in Sources */,

@@ -49,6 +49,13 @@ class CityListViewController: UIViewController, CityListViewProtocol {
     func reloadData() {
         self.tableView.reloadData()
     }
+    
+    func showError() {
+        AlertsManager.showAlertMessage(controller: self,
+                                       title: "Error".localize,
+                                       message: "ServerError".localize,
+                                       buttonString: "Ok".localize)
+    }
 }
 
 extension CityListViewController: UITableViewDelegate {

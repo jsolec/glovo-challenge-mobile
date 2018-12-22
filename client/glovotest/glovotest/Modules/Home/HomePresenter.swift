@@ -33,4 +33,8 @@ class HomePresenter: HomePresenterProtocol {
     func showCityList(cities: [CityModel]) {
         self.router.presentCityListModule(cities: cities)
     }
+    
+    func showError() {
+        self.view?.showError()
+    }
 }
