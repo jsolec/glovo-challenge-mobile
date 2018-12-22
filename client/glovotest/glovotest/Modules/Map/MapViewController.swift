@@ -182,6 +182,15 @@ class MapViewController: UIViewController, MapViewProtocol {
         }
     }
     
+    func deleteAllPolygons() {
+        for key in self.cityPolygonsDictionary!.keys {
+            for polygon in self.cityPolygonsDictionary![key]! {
+                polygon.map = nil
+            }
+            self.cityPolygonsDictionary!.removeValue(forKey: key)
+        }
+    }
+    
     func deleteAllMarkers() {
         if let dictionary = self.cityLogoDictionary {
             for key in dictionary.keys {
@@ -203,6 +212,7 @@ extension MapViewController: MapManagerDelegate {
     func zoomChanged(zoom: Float) {
         if zoom <= MapConstants.zoomForLogo {
             self.drawCityIcons()
+            self.deleteAllPolygons()
         } else {
             self.deleteAllMarkers()
         }
