@@ -45,10 +45,6 @@ class MapManager: NSObject {
                 perform(#selector(loadMap), with: nil, afterDelay: 0.5)
             }
         }
-        else {
-            let position = GMSCameraPosition.camera(withLatitude: CLLocationDegrees(41.3947688), longitude: CLLocationDegrees(2.0787279), zoom: 11)
-            mapView.animate(to: position)
-        }
     }
     
     func loadMapWithCityLocation(mapView: GMSMapView, cityLocation: CLLocationCoordinate2D) {
