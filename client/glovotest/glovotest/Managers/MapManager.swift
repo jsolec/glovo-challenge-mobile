@@ -10,7 +10,7 @@ import UIKit
 import GoogleMaps
 
 protocol MapManagerDelegate {
-    func cameraMoved(point: CGPoint)
+    func cameraMoved(zoom: Float, point: CGPoint)
     func zoomChanged(zoom: Float)
 }
 
@@ -136,6 +136,13 @@ class MapManager: NSObject {
         }
         return nil
     }
+    
+    func isWorkingAreaVisible(map: GMSMapView, polygonsPaths: [String]) -> Bool {
+        if let coordinate = self.getFirstLocationFromWorkingArea(polygonsPaths: polygonsPaths) {
+            return MapConstants.minCameraDistance > Float(GMSGeometryDistance(coordinate, map.camera.target))
+        }
+        return false
+    }
 }
 
 extension MapManager: GMSMapViewDelegate {
@@ -159,7 +166,8 @@ extension MapManager: GMSMapViewDelegate {
               " longitude = ", position.target.longitude,
               " zoom = ", position.zoom)
         if let delegate = self.delegate {
-            delegate.cameraMoved(point: CGPoint(x: position.target.latitude, y: position.target.longitude))
+            delegate.cameraMoved(zoom: position.zoom,
+                                 point: CGPoint(x: position.target.latitude, y: position.target.longitude))
             if self.zoom != position.zoom {
                 self.zoom = position.zoom
                 delegate.zoomChanged(zoom: position.zoom)

@@ -133,12 +133,21 @@ class MapViewController: UIViewController, MapViewProtocol {
     }
     
     func drawCityPolygons(cityCode: String, workingArea: [String]) {
-        var polygonsArray = [GMSPolygon]()
-        for area in workingArea {
-            let polygon = MapManager.shared.createCityPolygons(inMap: self.mapView, polygonPath: area)
-            polygonsArray.append(polygon)
+        if MapManager.shared.isWorkingAreaVisible(map: self.mapView, polygonsPaths: workingArea),
+            !self.cityPolygonsDictionary.keys.contains(cityCode) {
+            var polygonsArray = [GMSPolygon]()
+            for area in workingArea {
+                let polygon = MapManager.shared.createCityPolygons(inMap: self.mapView, polygonPath: area)
+                polygonsArray.append(polygon)
+            }
+            self.cityPolygonsDictionary[cityCode] = polygonsArray
+        } else if !MapManager.shared.isWorkingAreaVisible(map: self.mapView, polygonsPaths: workingArea),
+            self.cityPolygonsDictionary.keys.contains(cityCode) {
+            for polygon in self.cityPolygonsDictionary![cityCode]! {
+                polygon.map = nil
+            }
+            self.cityPolygonsDictionary.removeValue(forKey: cityCode)
         }
-        self.cityPolygonsDictionary[cityCode] = polygonsArray
     }
     
     func displayCityInfo(city: CityModel) {
@@ -184,8 +193,11 @@ class MapViewController: UIViewController, MapViewProtocol {
 }
 
 extension MapViewController: MapManagerDelegate {
-    func cameraMoved(point: CGPoint) {
+    func cameraMoved(zoom: Float, point: CGPoint) {
         self.presenter?.getCityOnPointInfo(point: point)
+        if zoom > MapConstants.zoomForLogo {
+            self.drawCitiesPolygons()
+        }
     }
     
     func zoomChanged(zoom: Float) {

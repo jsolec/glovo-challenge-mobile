@@ -14,7 +14,7 @@ struct Fonts {
 }
 
 struct Network {
-    static let baseUrl = "http://192.168.0.24:3000/api/"
+    static let baseUrl = "http://192.168.1.134:3000/api/"
     static let countries = "countries/"
     static let cities = "cities/"
 }
@@ -31,4 +31,5 @@ struct MapConstants {
     static let cityInfoOffset = 10000
     static let zoomForLogo: Float = 8.0
     static let zoomForCity: Float = 13.0
+    static let minCameraDistance: Float = 100000.0 //100Km
 }
