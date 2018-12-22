@@ -125,11 +125,13 @@ class MapManager: NSObject {
     
     func getFirstLocationFromWorkingArea(polygonsPaths: [String]) -> CLLocationCoordinate2D? {
         for polygonPath in polygonsPaths {
-            let path = GMSPath(fromEncodedPath: polygonPath)
-            if let count = path?.count() {
-                for index in 0...count {
-                    if let coordinate = path?.coordinate(at: index) {
-                        return coordinate
+            if !polygonPath.isEmpty {
+                let path = GMSPath(fromEncodedPath: polygonPath)
+                if let count = path?.count() {
+                    for index in 0...count {
+                        if let coordinate = path?.coordinate(at: index) {
+                            return coordinate
+                        }
                     }
                 }
             }
